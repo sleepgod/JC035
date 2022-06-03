@@ -887,6 +887,8 @@ def GetFullSystemData() -> dict:
 
 cpuConstants = CpuConstants()
 
+# https://github.com/Pure-Peace/system-info
+
 if __name__ == '__main__':
     try:
         lcd=serial.Serial("/dev/ttyUSB0",115200,timeout=0.5) #使用USB连接串行口
@@ -894,9 +896,36 @@ if __name__ == '__main__':
             print("串口打开成功")
         
         info = GetFullSystemData();
-        str="CLR(0);SBC(0);DC24(0,0,'"+str(info['cpu']['cpu_core'])+"',16);\r\n";
-        lcd.write(str.encode('gbk'));
+        str0="CLR(0);SBC(0);DC24(0,0,'CPU CORE:"+str(info['cpu']['cpu_core'])+"',16);\r\n";
+        print(str0);
+        lcd.write(str0.encode('gbk'));
         time.sleep(1);
+        str1="DC24(0,24,'CPU THREADS:"+str(info['cpu']['cpu_threads'])+"',16);\r\n";
+        print(str1);
+        lcd.write(str1.encode('gbk'));
+        time.sleep(1);
+
+        ticks=0;
+        while True:
+            ticks=ticks+1;
+
+            str2="DC24(0,48,'CPU LOAD:"+str(info['load']['one'])+" "+str(info['load']['five'])+" "+str(info['load']['fifteen'])+"',16);\r\n";
+            lcd.write(str2.encode('gbk'));
+            time.sleep(1);
+
+            h=48;
+            # print(info['disk']);
+            for disk in info['disk']:
+                h=h+24;
+                # str(disk['path'])+" "+
+                str3="DC24(0,"+str(h)+",'DISK:"+disk['size'][0]+" "+disk['size'][1]+" "+disk['size'][2]+" "+disk['size'][3]+"',16);\r\n";
+                lcd.write(str3.encode('gbk'));
+                time.sleep(1);
+
+            if (ticks%10==0):
+                print(ticks);
+                info = GetFullSystemData();
+
     except Exception as e:
         print("串口打开异常:",e);
 
