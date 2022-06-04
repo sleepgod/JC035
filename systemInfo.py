@@ -921,6 +921,11 @@ def get_netcard():
     # return netcard_info
     return "";
 
+def netStr(d):
+    if (d>1024):
+        return str(d/1024)+"M";
+    return str(d)+"K";
+
 if __name__ == '__main__':
     try:
         lcd=serial.Serial("/dev/ttyUSB0",115200,timeout=0.5) #使用USB连接串行口
@@ -949,8 +954,7 @@ if __name__ == '__main__':
             h+=step;
             lcdInfo+=showStr(0,h,"MEM:"+str(round(info['mem']['memTotal']/1024,2))+"G "+str(round(info['mem']['memFree']/1024,2))+"G",16);
             h+=step;
-            d=1024*1024*1024;
-            lcdInfo+=showStr(0,h,"NET:"+str(info['network']['up'])+" "+str(info['network']['down'])+" "+str(round(info['network']['upTotal']/d,2))+" "+str(round(info['network']['downTotal']/d,2)),16);
+            lcdInfo+=showStr(0,h,"NET:"+netStr(info['network']['up'])+" "+netStr(info['network']['down']),16);
 
             for disk in info['disk']:
                 h+=step;
