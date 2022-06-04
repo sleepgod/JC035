@@ -889,45 +889,67 @@ cpuConstants = CpuConstants()
 
 # https://github.com/Pure-Peace/system-info
 
+def showStr(x,y,info,c):
+    return "DC24("+str(x)+","+str(y)+",'"+info+"',"+str(c)+");";
+
+def timeStr(t):
+    re="";
+    d=1*60*60*24;
+    h=1*60*60;
+    m=1*60;
+    if (t>d):
+        re+=str(int(t//d))+"天";
+        t=t%d;
+    if (t>h):
+        re+=str(int(t//h))+"小时";
+        t=t%h;
+    if (t>m):
+        re+=str(int(t//m))+"分";
+        t=t%m;
+    if (t>0):
+        re+=str(int(t))+"秒";
+    return re;
+
 if __name__ == '__main__':
     try:
         lcd=serial.Serial("/dev/ttyUSB0",115200,timeout=0.5) #使用USB连接串行口
         if (lcd.isOpen()==True):
             print("串口打开成功")
-        
-        info = GetFullSystemData();
-        str0="CLR(0);SBC(0);DC24(0,0,'CPU CORE:"+str(info['cpu']['cpu_core'])+"',16);\r\n";
-        print(str0);
-        lcd.write(str0.encode('gbk'));
-        time.sleep(1);
-        str1="DC24(0,24,'CPU THREADS:"+str(info['cpu']['cpu_threads'])+"',16);\r\n";
-        print(str1);
-        lcd.write(str1.encode('gbk'));
-        time.sleep(1);
-
-        ticks=0;
+    
         while True:
-            ticks=ticks+1;
+            info = GetFullSystemData();
+            # print(info['boot']);
 
-            str2="DC24(0,48,'CPU LOAD:"+str(info['load']['one'])+" "+str(info['load']['five'])+" "+str(info['load']['fifteen'])+"',16);\r\n";
-            lcd.write(str2.encode('gbk'));
+            h=0;
+            step=24;
+            lcdInfo="CLR(0);";
+            lcdInfo+="SBC(0);";
+            lcdInfo+=showStr(0,h,info['boot']['datetime'],16);
+            h+=step;
+            lcdInfo+=showStr(0,h,"运行:"+timeStr(info['boot']['runtime']),16);
+            h+=step;
+            lcdInfo+=showStr(0,h,"CPU CORE:"+str(info['cpu']['cpu_core']),16);
+            h+=step;
+            lcdInfo+=showStr(0,h,"CPU THREADS:"+str(info['cpu']['cpu_threads']),16);
+            h+=step;
+            lcdInfo+=showStr(0,h,"LOAD:"+str(info['cpu']['used'])+"% "+str(info['load']['one'])+" "+str(info['load']['five'])+" "+str(info['load']['fifteen']),16);
+            h+=step;
+            lcdInfo+=showStr(0,h,"MEM:"+str(round(info['mem']['memTotal']/1024,2))+"G "+str(round(info['mem']['memFree']/1024,2))+"G",16);
+            h+=step;
+            d=1024*1024*1024;
+            lcdInfo+=showStr(0,h,"NET:"+str(info['network']['up'])+" "+str(info['network']['down'])+" "+str(round(info['network']['upTotal']/d,2))+" "+str(round(info['network']['downTotal']/d,2)),16);
+
+            for disk in info['disk']:
+                h+=step;
+                lcdInfo+=showStr(0,h,"DISK:"+disk['size'][0]+" "+disk['size'][1]+" "+disk['size'][2]+" "+disk['size'][3],16);
+
+            lcdInfo+="\r\n";
+            lcd.write(lcdInfo.encode('gbk'));
+
             time.sleep(1);
 
-            h=48;
-            # print(info['disk']);
-            for disk in info['disk']:
-                h=h+24;
-                # str(disk['path'])+" "+
-                str3="DC24(0,"+str(h)+",'DISK:"+disk['size'][0]+" "+disk['size'][1]+" "+disk['size'][2]+" "+disk['size'][3]+"',16);\r\n";
-                lcd.write(str3.encode('gbk'));
-                time.sleep(1);
-
-            if (ticks%10==0):
-                print(ticks);
-                info = GetFullSystemData();
-
     except Exception as e:
-        print("串口打开异常:",e);
+        print("异常:",e);
 
     # print(GetFullSystemData())
     # print(GetCpuConstants())
