@@ -910,6 +910,17 @@ def timeStr(t):
         re+=str(int(t))+"秒";
     return re;
 
+def get_netcard():
+    # netcard_info = []
+    info = psutil.net_if_addrs()
+    for k,v in info.items():
+        for item in v:
+            if item[0] == 2 and not item[1]=='127.0.0.1':
+                # netcard_info.append((k,item[1]))
+                return item[1];
+    # return netcard_info
+    return "";
+
 if __name__ == '__main__':
     try:
         lcd=serial.Serial("/dev/ttyUSB0",115200,timeout=0.5) #使用USB连接串行口
@@ -927,6 +938,8 @@ if __name__ == '__main__':
             lcdInfo+=showStr(0,h,info['boot']['datetime'],16);
             h+=step;
             lcdInfo+=showStr(0,h,"运行:"+timeStr(info['boot']['runtime']),16);
+            h+=step;
+            lcdInfo+=showStr(0,h,"IP:"+get_netcard(),16);
             h+=step;
             lcdInfo+=showStr(0,h,"CPU CORE:"+str(info['cpu']['cpu_core']),16);
             h+=step;
