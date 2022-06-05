@@ -939,7 +939,7 @@ if __name__ == '__main__':
             h=0;
             step=24;
             lcdInfo="CLR(0);";
-            lcdInfo+="SBC(0);";
+            # lcdInfo+="SBC(0);";
             lcdInfo+=showStr(0,h,info['boot']['datetime'],16);
             h+=step;
             lcdInfo+=showStr(0,h,"运行:"+timeStr(info['boot']['runtime']),16);
@@ -950,11 +950,11 @@ if __name__ == '__main__':
             h+=step;
             lcdInfo+=showStr(0,h,"CPU THREADS:"+str(info['cpu']['cpu_threads']),16);
             h+=step;
-            lcdInfo+=showStr(0,h,"LOAD:"+str(info['cpu']['used'])+"% "+str(info['load']['one'])+" "+str(info['load']['five'])+" "+str(info['load']['fifteen']),16);
+            lcdInfo+=showStr(0,h,"LOAD:"+str(info['cpu']['used'])+"% "+str(info['load']['one'])+" "+str(info['load']['five'])+" "+str(info['load']['fifteen']),2);
             h+=step;
             lcdInfo+=showStr(0,h,"MEM:"+str(round(info['mem']['memTotal']/1024,2))+"G "+str(round(info['mem']['memFree']/1024,2))+"G",16);
             h+=step;
-            lcdInfo+=showStr(0,h,"NET:"+netStr(info['network']['up'])+" "+netStr(info['network']['down']),16);
+            lcdInfo+=showStr(0,h,"NET:"+netStr(info['network']['up'])+" "+netStr(info['network']['down']),5);
 
             for disk in info['disk']:
                 h+=step;
@@ -963,7 +963,7 @@ if __name__ == '__main__':
             lcdInfo+="\r\n";
             lcd.write(lcdInfo.encode('gbk'));
 
-            time.sleep(1);
+            time.sleep(5);
 
     except Exception as e:
         print("异常:",e);
