@@ -940,30 +940,30 @@ if __name__ == '__main__':
             step=24;
             lcdInfo="CLR(0);";
             # lcdInfo+="SBC(0);";
-            lcdInfo+=showStr(0,h,info['boot']['datetime'],16);
+            lcdInfo+=showStr(0,h,info['boot']['datetime'],1);
             h+=step;
-            lcdInfo+=showStr(0,h,"运行:"+timeStr(info['boot']['runtime']),16);
+            lcdInfo+=showStr(0,h,"运行:"+timeStr(info['boot']['runtime']),17);
             h+=step;
-            lcdInfo+=showStr(0,h,"IP:"+get_netcard(),16);
+            lcdInfo+=showStr(0,h,"IP:"+get_netcard(),5);
             h+=step;
-            lcdInfo+=showStr(0,h,"CPU CORE:"+str(info['cpu']['cpu_core']),16);
+            lcdInfo+=showStr(0,h,"CPU CORE:"+str(info['cpu']['cpu_core']),4);
             h+=step;
-            lcdInfo+=showStr(0,h,"CPU THREADS:"+str(info['cpu']['cpu_threads']),16);
+            lcdInfo+=showStr(0,h,"CPU THREADS:"+str(info['cpu']['cpu_threads']),4);
             h+=step;
             lcdInfo+=showStr(0,h,"LOAD:"+str(info['cpu']['used'])+"% "+str(info['load']['one'])+" "+str(info['load']['five'])+" "+str(info['load']['fifteen']),2);
             h+=step;
-            lcdInfo+=showStr(0,h,"MEM:"+str(round(info['mem']['memTotal']/1024,2))+"G "+str(round(info['mem']['memFree']/1024,2))+"G",16);
+            lcdInfo+=showStr(0,h,"MEM:"+str(round(info['mem']['memTotal']/1024,2))+"G "+str(round(info['mem']['memFree']/1024,2))+"G",6);
             h+=step;
             lcdInfo+=showStr(0,h,"NET:"+netStr(info['network']['up'])+" "+netStr(info['network']['down']),5);
 
             for disk in info['disk']:
                 h+=step;
-                lcdInfo+=showStr(0,h,"DISK:"+disk['size'][0]+" "+disk['size'][1]+" "+disk['size'][2]+" "+disk['size'][3],16);
+                lcdInfo+=showStr(0,h,"DISK:"+disk['size'][0]+" "+disk['size'][1]+" "+disk['size'][2]+" "+disk['size'][3],9);
 
             lcdInfo+="\r\n";
             lcd.write(lcdInfo.encode('gbk'));
 
-            time.sleep(5);
+            time.sleep(15);
 
     except Exception as e:
         print("异常:",e);
